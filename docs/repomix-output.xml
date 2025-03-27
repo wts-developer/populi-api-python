@@ -46,6 +46,7 @@ The content is organized as follows:
 docs/
   documentation.md
   library_overview.md
+  project_structure.md
 populi/
   __init__.py
   build.py
@@ -349,6 +350,40 @@ The library also includes a comprehensive test suite to ensure functionality and
 3. **Singleton Pattern**: The driver module maintains a single instance for managing API connectivity.
 
 This library would be particularly useful for educational institutions using Populi who need to integrate with other systems, automate workflows, or build custom reporting tools.
+</file>
+
+<file path="docs/project_structure.md">
+# Project Structure
+
+```bash
+tree
+.
+├── LICENSE
+├── MANIFEST
+├── README.md
+├── build.py
+├── docs
+│   ├── documentation.md
+│   ├── library_overview.md
+│   ├── project_structure.md
+│   └── repomix-output.xml
+├── populi
+│   ├── __init__.py
+│   ├── build.py
+│   ├── cmds.py
+│   ├── driver.py
+│   └── exceptions.py
+├── requirements.txt
+├── setup.py
+└── tests
+    ├── build_tests.py
+    ├── data
+    │   └── test.xml
+    ├── driver_tests.py
+    └── populi_tests.py
+
+5 directories, 19 files
+```
 </file>
 
 <file path="populi/__init__.py">
