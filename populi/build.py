@@ -1,6 +1,5 @@
 import pycurl
 from io import BytesIO
-import json
 from lxml import etree
 from re import sub
 from bs4 import BeautifulSoup

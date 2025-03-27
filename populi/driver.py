@@ -4,7 +4,7 @@ import json
 from io import BytesIO
 import time
 from urllib.parse import urlencode
-from os import environ, path
+from os import environ
 
 from . import exceptions
 
