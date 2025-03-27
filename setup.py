@@ -10,7 +10,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="populi-mrobison",
+    name="populi-rguss",
     version="1.0.0",
     author="Robert Guss",
     author_email="rguss@wts.edu",
