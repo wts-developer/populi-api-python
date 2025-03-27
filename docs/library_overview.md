@@ -16,7 +16,7 @@ The library serves as a client for the Populi API, handling authentication, requ
 
 4. **Rate Limiting**: Implements retry logic for handling rate limits from the Populi API.
 
-5. **Flexible Response Formats**: Returns data as either raw XML strings or as parsed lxml element objects.
+5. **Flexible Response Formats**: Returns data as either JSON strings or as native Python objects (dictionaries and lists).
 
 6. **Comprehensive Error Handling**: Custom exceptions for different API error types.
 
@@ -38,9 +38,18 @@ The typical usage flow involves:
 
 1. Initializing the library with credentials using `populi.initialize()`
 2. Calling specific API methods like `populi.get_person()` or `populi.get_transactions()`
-3. Processing the returned data (either as XML or parsed objects)
+3. Processing the returned data (either as JSON strings or Python objects)
 
 The library also includes a comprehensive test suite to ensure functionality and compatibility.
+
+## Recent Updates
+
+The library has been updated to work with Populi's JSON-based API instead of the previous XML-based API. Key changes include:
+
+1. Response data is now returned as JSON strings or native Python objects (dictionaries and lists)
+2. The `asXML` parameter now determines whether responses are returned as native Python objects (True) or JSON strings (False)
+3. Improved error handling for JSON API responses
+4. Enhanced pagination handling for JSON data structures
 
 ## Notable Design Patterns
 
@@ -49,5 +58,7 @@ The library also includes a comprehensive test suite to ensure functionality and
 2. **Factory Pattern**: The build module dynamically generates command functions based on the API documentation.
 
 3. **Singleton Pattern**: The driver module maintains a single instance for managing API connectivity.
+
+4. **Adapter Pattern**: The library adapts between different response formats (JSON/Python objects) based on user preference.
 
 This library would be particularly useful for educational institutions using Populi who need to integrate with other systems, automate workflows, or build custom reporting tools.

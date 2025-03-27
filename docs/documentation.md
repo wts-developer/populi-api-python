@@ -10,7 +10,7 @@ This library provides a Python wrapper for the complete Populi API, allowing dev
 
 - **Complete API Coverage**: Implements all commands from the [Populi API Reference](https://support.populiweb.com/hc/en-us/articles/223798747-API-Reference)
 - **Automatic Pagination**: Seamlessly handles multi-page results
-- **Response Format Options**: Return data as either raw XML or parsed lxml elements
+- **Response Format Options**: Return data as either JSON strings or Python objects
 - **Error Handling**: Custom exceptions for different API error types
 - **Rate Limiting**: Automatic retry with exponential backoff for rate-limited requests
 - **Flexible Authentication**: Support for both access key and username/password authentication
@@ -25,7 +25,6 @@ pip install populi-mrobison
 
 - Python 3.x
 - pycurl
-- lxml
 - beautifulsoup4 (for building from the API reference)
 
 ## Setup
@@ -35,19 +34,19 @@ Initialize the library with your Populi credentials:
 ```python
 import populi
 
-# Using access key
+# Using access key with native Python objects returned
 populi.initialize(
     endpoint='https://your_campus.populiweb.com/api/index.php',
     access_key='your_access_key',
-    asXML=True  # Set to True to get lxml Elements instead of XML strings
+    asXML=True  # Set to True to get Python objects instead of JSON strings
 )
 
-# OR using username and password
+# OR using username and password with JSON string responses
 populi.initialize(
     endpoint='https://your_campus.populiweb.com/api/index.php',
     username='your_username',
     password='your_password',
-    asXML=True
+    asXML=False  # Return JSON strings
 )
 
 # You can also pass additional curl options
@@ -66,7 +65,7 @@ populi.initialize(
 ### Get Person Information
 
 ```python
-# Get person details by ID
+# Get person details by ID (returned as a Python dictionary)
 person = populi.get_person(person_id='12345')
 
 # Get person details by student ID
@@ -163,13 +162,35 @@ populi.upload_file(
 )
 ```
 
+## JSON Response Handling
+
+The updated library now handles JSON responses from the Populi API. You can choose how to receive the responses:
+
+```python
+# Get responses as native Python objects (dictionaries or lists)
+populi.initialize(endpoint='your_endpoint', access_key='your_key', asXML=True)
+
+# Work with Python objects directly
+students = populi.get_term_students()
+for student in students.get('students', []):
+    print(f"Student: {student['first_name']} {student['last_name']}")
+
+# Or get responses as JSON strings
+populi.initialize(endpoint='your_endpoint', access_key='your_key', asXML=False)
+
+# Parse the JSON yourself if needed
+import json
+students_json = populi.get_term_students()
+students_data = json.loads(students_json)
+```
+
 ## Error Handling
 
 The library provides custom exceptions for different API error types:
 
 ```python
 import populi
-from populi.exceptions import AuthenticationError, LockedOut, PermissionError
+from populi.exceptions import AuthenticationError, LockedOut, PermissionError, RateLimitError
 
 try:
     result = populi.get_person(person_id='12345')
@@ -179,6 +200,8 @@ except LockedOut:
     print("Your account is locked")
 except PermissionError:
     print("You don't have permission to access this resource")
+except RateLimitError:
+    print("API rate limit exceeded")
 except Exception as e:
     print(f"An unexpected error occurred: {e}")
 ```
@@ -207,11 +230,45 @@ formatted_output = autopep8.fix_code(output, options={'aggressive': 2})
 print(formatted_output)
 ```
 
+## Pagination
+
+The library handles pagination automatically for endpoints that return large result sets:
+
+```python
+# This will automatically fetch all pages and combine them into a single result
+all_transactions = populi.get_transactions(start_date='2023-01-01', end_date='2023-12-31')
+
+# For endpoints with pagination, use the root_element parameter to identify the array of results
+all_people = populi.get_term_students(term_id='12345')
+```
+
 ## Limitations
 
 - The library is subject to Populi's API rate limits
 - Complex data structures like arrays may require special handling
 - Some operations may require specific permissions in your Populi instance
+
+## Migration from XML to JSON
+
+If you're upgrading from a previous version that used XML responses, note these changes:
+
+1. The `asXML` parameter now controls whether you get native Python objects (True) or JSON strings (False)
+2. Response handling code should be updated to use Python dictionaries instead of XML elements
+3. XPath queries should be replaced with dictionary access
+
+Example of migrating code:
+
+```python
+# Old XML-based code
+students = populi.get_term_students(term_id='12345')
+for student in students.findall('student'):
+    print(student.find('first_name').text, student.find('last_name').text)
+
+# New JSON-based code
+students = populi.get_term_students(term_id='12345')
+for student in students.get('students', []):
+    print(student.get('first_name'), student.get('last_name'))
+```
 
 ## License
 
